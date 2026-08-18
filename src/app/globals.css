@@ -7,29 +7,27 @@
 
 @layer base {
   :root {
-    --background: #f8fafc; /* slate-50 */
-    --foreground: #0f172a; /* slate-900 */
-    --surface: #ffffff;
-    --border: #e2e8f0; /* slate-200 */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.5);
+    --background: #000000; /* Pure black */
+    --foreground: #f8fafc; /* Very light slate */
+    --surface: #111111;
+    --border: #333333;
     
-    --priority-red: #ef4444; /* red-500 */
-    --priority-red-glow: rgba(239, 68, 68, 0.2);
+    /* Apple Dark Glassmorphism */
+    --glass-bg: rgba(30, 30, 30, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
     
-    --priority-green: #10b981; /* emerald-500 */
-    --priority-green-glow: rgba(16, 185, 129, 0.2);
-    
-    --priority-yellow: #f59e0b; /* amber-500 */
-    --priority-yellow-glow: rgba(245, 158, 11, 0.2);
+    --priority-red: #ff453a;
+    --priority-green: #32d74b;
+    --priority-yellow: #ffd60a;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
     background-image: 
-      radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.05), transparent 25%),
-      radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.05), transparent 25%);
+      radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.03), transparent 30%),
+      radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.02), transparent 30%);
     background-attachment: fixed;
     min-height: 100vh;
   }
@@ -38,9 +36,9 @@
 @layer utilities {
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 var(--glass-highlight);
   }
 }
