@@ -270,18 +270,19 @@ function TaskCard({ task }: { task: Task }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
       className={cn(
-        "glass-panel rounded-3xl overflow-hidden transition-all duration-500 border",
+        "glass-panel rounded-3xl overflow-hidden transition-all duration-500 border mb-4",
         task.is_done ? "opacity-60 bg-black/40 border-[#0a84ff]/30" : "border-white/10"
       )}
     >
-      <div className="p-4 md:p-5 flex items-center gap-3 md:gap-4">
+      <div className="p-4 md:p-6 flex items-center gap-3 md:gap-5">
         <button
           onClick={toggleDone}
+          style={{ touchAction: "manipulation" }}
           className={cn(
-            "w-6 h-6 md:w-7 md:h-7 rounded-full border-[1.5px] flex items-center justify-center transition-all duration-300 shrink-0",
+            "w-8 h-8 md:w-9 md:h-9 rounded-full border-[1.5px] flex items-center justify-center transition-all duration-300 shrink-0 cursor-pointer hover:scale-105 active:scale-95",
             task.is_done 
               ? "bg-[#0a84ff] border-[#0a84ff] shadow-[0_0_12px_rgba(10,132,255,0.4)]" 
-              : "border-white/30 hover:border-white/60 bg-black/20"
+              : "border-white/40 hover:border-white/80 bg-black/30"
           )}
         >
           <AnimatePresence>
@@ -291,38 +292,40 @@ function TaskCard({ task }: { task: Task }) {
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
               >
-                <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-white font-bold" />
+                <Check className="w-4 h-4 md:w-5 md:h-5 text-white font-bold" />
               </motion.div>
             )}
           </AnimatePresence>
         </button>
 
-        <div className="flex-1 min-w-0 cursor-pointer select-none" onClick={() => setExpanded(!expanded)}>
+        <div className="flex-1 min-w-0 cursor-pointer select-none py-1" onClick={() => setExpanded(!expanded)}>
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
             <h3 className={cn(
-              "font-normal text-[1rem] truncate transition-all duration-300",
+              "font-medium text-[1.05rem] md:text-[1.15rem] leading-tight truncate transition-all duration-300",
               task.is_done ? "text-slate-500 line-through" : "text-slate-100"
             )}>
               {task.title}
             </h3>
-            <div className="flex items-center gap-1.5 opacity-80">
-              <div className={cn("w-2 h-2 rounded-full shrink-0", priorityDots[task.priority])} />
-              <span className="text-xs text-slate-400 font-medium">{priorityLabels[task.priority]}</span>
+            <div className="flex items-center gap-1.5 opacity-80 mt-0.5 sm:mt-0">
+              <div className={cn("w-2 h-2 md:w-2.5 md:h-2.5 rounded-full shrink-0", priorityDots[task.priority])} />
+              <span className="text-[11px] md:text-xs text-slate-400 font-medium">{priorityLabels[task.priority]}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <button 
             onClick={deleteTask}
-            className="p-1.5 md:p-2 text-slate-500 hover:text-red-400 bg-white/5 hover:bg-red-500/10 rounded-full transition-colors"
+            style={{ touchAction: "manipulation" }}
+            className="p-2.5 md:p-3 text-slate-500 hover:text-red-400 bg-white/5 hover:bg-red-500/10 rounded-full transition-colors active:bg-white/10"
             title="Delete Task"
           >
             <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
           <button 
             onClick={() => setExpanded(!expanded)}
-            className="p-1.5 md:p-2 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+            style={{ touchAction: "manipulation" }}
+            className="p-2.5 md:p-3 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors active:bg-white/10"
             title={expanded ? "Collapse" : "Expand"}
           >
             {expanded ? <ChevronUp className="w-4 h-4 md:w-5 md:h-5" /> : <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />}
@@ -338,11 +341,11 @@ function TaskCard({ task }: { task: Task }) {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden bg-black/40 border-t border-white/5"
           >
-            <div className="p-4 md:p-5 pl-12 md:pl-16 flex flex-col gap-4">
+            <div className="p-4 md:p-6 pl-12 md:pl-20 flex flex-col gap-4">
               {task.descriptions && task.descriptions.length > 0 && (
                 <ul className="flex flex-col gap-3">
                   {task.descriptions.map((desc, i) => (
-                    <li key={i} className="flex gap-3 text-slate-300 bg-white/5 p-3 rounded-2xl border border-white/5 shadow-inner text-sm md:text-base">
+                    <li key={i} className="flex gap-3 text-slate-300 bg-white/5 p-3.5 rounded-2xl border border-white/5 shadow-inner text-sm md:text-base">
                       <div className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-2 shrink-0" />
                       <p className="leading-relaxed font-normal">{desc}</p>
                     </li>
@@ -351,34 +354,39 @@ function TaskCard({ task }: { task: Task }) {
               )}
 
               {addingDesc ? (
-                <form onSubmit={addDescription} className="flex gap-2 items-center">
+                <form onSubmit={addDescription} className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
                   <input
                     autoFocus
                     type="text"
                     value={newDesc}
                     onChange={(e) => setNewDesc(e.target.value)}
                     placeholder="Add a description..."
-                    className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-white/30 text-white shadow-inner font-normal"
+                    className="flex-1 min-w-[200px] w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm md:text-base focus:outline-none focus:border-white/30 text-white shadow-inner font-normal"
                   />
-                  <button
-                    type="submit"
-                    disabled={!newDesc.trim()}
-                    className="p-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-400 disabled:opacity-50 transition-colors shadow-[0_0_10px_rgba(16,185,129,0.3)]"
-                  >
-                    <Check className="w-5 h-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAddingDesc(false)}
-                    className="px-3 py-2 text-slate-400 hover:bg-white/10 rounded-xl transition-colors text-sm"
-                  >
-                    Cancel
-                  </button>
+                  <div className="flex gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+                    <button
+                      type="button"
+                      onClick={() => setAddingDesc(false)}
+                      style={{ touchAction: "manipulation" }}
+                      className="px-4 py-2.5 text-slate-400 hover:bg-white/10 rounded-xl transition-colors text-sm md:text-base active:bg-white/5"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={!newDesc.trim()}
+                      style={{ touchAction: "manipulation" }}
+                      className="px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-400 disabled:opacity-50 transition-colors shadow-[0_0_10px_rgba(16,185,129,0.3)] flex items-center justify-center active:scale-95"
+                    >
+                      <Check className="w-5 h-5" />
+                    </button>
+                  </div>
                 </form>
               ) : (
                 <button
                   onClick={() => setAddingDesc(true)}
-                  className="flex items-center gap-2 text-slate-400 font-medium py-2 px-4 bg-white/5 hover:bg-white/10 rounded-xl transition-colors w-fit border border-white/5 text-sm"
+                  style={{ touchAction: "manipulation" }}
+                  className="flex items-center justify-center sm:justify-start gap-2 text-slate-400 font-medium py-3 px-5 bg-white/5 hover:bg-white/10 rounded-xl transition-colors w-full sm:w-fit border border-white/5 text-sm md:text-base active:bg-white/10"
                 >
                   <Plus className="w-4 h-4" /> Add Note
                 </button>
