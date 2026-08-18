@@ -28,6 +28,7 @@ export default function Home() {
 
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState<Priority>("green");
 
   useEffect(() => {
@@ -77,17 +78,20 @@ export default function Home() {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
 
+    const initialDescriptions = newTaskDescription.trim() ? [newTaskDescription.trim()] : [];
+
     const { error } = await supabase.from("tasks").insert([
       {
         title: newTaskTitle.trim(),
         priority: newTaskPriority,
         is_done: false,
-        descriptions: [],
+        descriptions: initialDescriptions,
       },
     ]);
 
     if (!error) {
       setNewTaskTitle("");
+      setNewTaskDescription("");
       setIsAdding(false);
     } else {
       console.error("Supabase insert error:", error);
@@ -127,14 +131,24 @@ export default function Home() {
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 via-amber-400 to-red-400 opacity-80" />
             
-            <input
-              autoFocus
-              type="text"
-              placeholder="What needs to be done?"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              className="w-full bg-transparent text-xl font-medium text-white placeholder-slate-500 focus:outline-none border-b border-white/10 pb-2 transition-colors focus:border-white/30"
-            />
+            <div className="flex flex-col gap-4">
+              <input
+                autoFocus
+                type="text"
+                placeholder="What needs to be done?"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                className="w-full bg-transparent text-xl font-medium text-white placeholder-slate-500 focus:outline-none border-b border-white/10 pb-2 transition-colors focus:border-white/30"
+              />
+              
+              <input
+                type="text"
+                placeholder="Add a description... (optional)"
+                value={newTaskDescription}
+                onChange={(e) => setNewTaskDescription(e.target.value)}
+                className="w-full bg-black/40 text-sm font-normal text-slate-300 placeholder-slate-600 focus:outline-none border border-white/5 p-3 rounded-xl transition-colors focus:border-white/20 shadow-inner"
+              />
+            </div>
             
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
               <div className="flex items-center gap-2 bg-black/40 p-2 rounded-2xl border border-white/10 overflow-x-auto">
