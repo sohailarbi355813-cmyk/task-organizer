@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Check, ChevronDown, ChevronUp, Trash2, Send, X } from "lucide-react";
+import { Plus, Check, ChevronDown, ChevronUp, Trash2, Send, X, Pencil } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -223,6 +223,24 @@ function TaskCard({ task }: { task: Task }) {
   const [expanded, setExpanded] = useState(false);
   const [newDesc, setNewDesc] = useState("");
   const [addingDesc, setAddingDesc] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(task.title);
+
+  const updateTitle = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!editTitle.trim() || editTitle.trim() === task.title) {
+      setIsEditing(false);
+      setEditTitle(task.title);
+      return;
+    }
+
+    await supabase
+      .from("tasks")
+      .update({ title: editTitle.trim() })
+      .eq("id", task.id);
+      
+    setIsEditing(false);
+  };
 
   const toggleDone = async () => {
     await supabase
@@ -298,22 +316,51 @@ function TaskCard({ task }: { task: Task }) {
           </AnimatePresence>
         </button>
 
-        <div className="flex-1 min-w-0 cursor-pointer select-none py-1" onClick={() => setExpanded(!expanded)}>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-            <h3 className={cn(
-              "font-medium text-[1.05rem] md:text-[1.15rem] leading-tight truncate transition-all duration-300",
-              task.is_done ? "text-slate-500 line-through" : "text-slate-100"
-            )}>
-              {task.title}
-            </h3>
-            <div className="flex items-center gap-1.5 opacity-80 mt-0.5 sm:mt-0">
-              <div className={cn("w-2 h-2 md:w-2.5 md:h-2.5 rounded-full shrink-0", priorityDots[task.priority])} />
-              <span className="text-[11px] md:text-xs text-slate-400 font-medium">{priorityLabels[task.priority]}</span>
+        <div className="flex-1 min-w-0 py-1">
+          {isEditing ? (
+            <form onSubmit={updateTitle} className="flex items-center gap-2 w-full">
+              <input
+                autoFocus
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                onBlur={() => updateTitle()}
+                className="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-1.5 text-[1.05rem] md:text-[1.15rem] text-white focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+            </form>
+          ) : (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 cursor-pointer select-none" onClick={() => setExpanded(!expanded)}>
+              <h3 className={cn(
+                "font-medium text-[1.05rem] md:text-[1.15rem] leading-tight break-words whitespace-normal transition-all duration-300",
+                task.is_done ? "text-slate-500 line-through" : "text-slate-100"
+              )}>
+                {task.title}
+              </h3>
+              <div className="flex items-center gap-1.5 opacity-80 mt-0.5 sm:mt-0">
+                <div className={cn("w-2 h-2 md:w-2.5 md:h-2.5 rounded-full shrink-0", priorityDots[task.priority])} />
+                <span className="text-[11px] md:text-xs text-slate-400 font-medium">{priorityLabels[task.priority]}</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isEditing) {
+                updateTitle();
+              } else {
+                setEditTitle(task.title);
+                setIsEditing(true);
+              }
+            }}
+            style={{ touchAction: "manipulation" }}
+            className="p-2.5 md:p-3 text-slate-500 hover:text-emerald-400 bg-white/5 hover:bg-emerald-500/10 rounded-full transition-colors active:bg-white/10"
+            title={isEditing ? "Save Task" : "Edit Task"}
+          >
+            {isEditing ? <Check className="w-4 h-4 md:w-5 md:h-5" /> : <Pencil className="w-4 h-4 md:w-5 md:h-5" />}
+          </button>
           <button 
             onClick={deleteTask}
             style={{ touchAction: "manipulation" }}
